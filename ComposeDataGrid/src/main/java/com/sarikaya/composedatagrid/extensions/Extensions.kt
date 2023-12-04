@@ -1,6 +1,7 @@
 package com.sarikaya.composedatagrid.extensions
 
 import androidx.compose.runtime.MutableState
+import com.sarikaya.composedatagrid.utils.SortBy
 
 
 internal fun <D : Any> MutableMap<Int, D>.filterForIndexList(indexes: List<Int>): List<D> {
@@ -45,4 +46,20 @@ internal fun <D : Any> MutableMap<Int, D>.getPageCount(
         return (this.size / pagingLimit) + 1
     }
     return this.size / pagingLimit
+}
+
+internal fun <D : Any> List<D>.sortingBy(sortBy: SortBy, field: String): List<D> {
+    return when (sortBy) {
+        SortBy.NO_SORT -> this
+        SortBy.ASCENDING -> this.sortedWith(compareBy { getValue(it, field) as Comparable<*>? })
+        SortBy.DESCENDING -> this.sortedWith(compareByDescending { getValue(it, field) as Comparable<*>? })
+    }
+}
+
+private fun <D : Any> getValue(obj: D, field: String): Any? {
+    val property = obj::class.members
+        .firstOrNull { it.name == field }
+        ?.call(obj)
+
+    return property
 }

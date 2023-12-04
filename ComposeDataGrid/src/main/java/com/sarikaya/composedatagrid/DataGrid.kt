@@ -35,6 +35,7 @@ import com.sarikaya.composedatagrid.extensions.setBorder
 import com.sarikaya.composedatagrid.extensions.setPagination
 import com.sarikaya.composedatagrid.extensions.setTableHeight
 import com.sarikaya.composedatagrid.extensions.setTableWidth
+import com.sarikaya.composedatagrid.extensions.sortingBy
 import com.sarikaya.composedatagrid.gridindexselector.OnClickListenerEvent
 import com.sarikaya.composedatagrid.gridindexselector.OnClickListenerImpl
 import com.sarikaya.composedatagrid.model.DataGridColumn
@@ -43,6 +44,7 @@ import com.sarikaya.composedatagrid.theme.CellModifier
 import com.sarikaya.composedatagrid.theme.CellPadding
 import com.sarikaya.composedatagrid.theme.DataGridTheme
 import com.sarikaya.composedatagrid.theme.Themes
+import com.sarikaya.composedatagrid.utils.SortBy
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
 
@@ -79,6 +81,9 @@ class DataGrid<D : Any> {
     private var pagingLimit: Int? = null
     private var pagingTotal: Int? = null
 
+    // DataGrid Sorting
+    private var isSortingEnabled: Boolean = false
+
     fun setTableSize(width: Dp? = null, height: Dp? = null): DataGrid<D> {
         this.width = width
         this.height = height
@@ -94,6 +99,20 @@ class DataGrid<D : Any> {
         this.checkBoxColumn = check
         this.multipleSelect = if (check) multipleSelect else false
         return this
+    }
+
+    fun setSorting(isSortingEnabled: Boolean = false): DataGrid<D> {
+        this.isSortingEnabled = isSortingEnabled
+        return this
+    }
+
+    init {
+        theme.setColumnCellTextStyle(
+            CellModifier(
+                theme.columnCellTextStyle.textStyle,
+                height = 36.dp
+            )
+        )
     }
 
     /**
@@ -204,6 +223,13 @@ class DataGrid<D : Any> {
         val isLoading = remember {
             mutableStateOf(false)
         }
+        val sortBy = remember {
+            mutableStateOf(SortBy.DESCENDING)
+        }
+        val sortByField = remember {
+            mutableStateOf(columns.get(0)!!.key)
+        }
+
         Column {
             if (dataSource.isNotEmpty() && !isLoading.value) {
                 LazyRow(
@@ -220,6 +246,11 @@ class DataGrid<D : Any> {
                                 columnWidths = columnWidths,
                                 theme = theme,
                                 checkBoxEnabled = checkBoxColumn,
+                                isSortingEnabled = isSortingEnabled,
+                                sortingOnClickListener = { key, _sortBy ->
+                                    sortByField.value = key
+                                    sortBy.value = _sortBy
+                                },
                                 checkBoxState = selectedRowIndexes.value.isNotEmpty()
                             ) {
                                 selectedRowIndexes.value = mutableListOf()
@@ -236,7 +267,7 @@ class DataGrid<D : Any> {
                                         isPaginationAsync,
                                         pagingLimit,
                                         page,
-                                    )
+                                    ).sortingBy(sortBy.value, sortByField.value)
                                 ) { index, data ->
                                     DataGridRow(
                                         rowIndex = rowIndex,

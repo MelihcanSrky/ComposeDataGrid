@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.sarikaya.composedatagrid.model.DataGridColumn
 import com.sarikaya.composedatagrid.theme.DataGridTheme
+import com.sarikaya.composedatagrid.utils.SortBy
 
 @Composable
 internal fun ColumnGridRow(
@@ -16,6 +17,8 @@ internal fun ColumnGridRow(
     theme: DataGridTheme,
     checkBoxEnabled: Boolean = false,
     checkBoxState: Boolean,
+    isSortingEnabled: Boolean = false,
+    sortingOnClickListener: (String, SortBy) -> Unit,
     onCheckBoxClickListener: () -> Unit
 ) {
     Row {
@@ -36,8 +39,11 @@ internal fun ColumnGridRow(
                     text = column.value.name,
                     index = column.key,
                     columnWidths,
-                    theme
-                )
+                    theme,
+                    isSortingEnabled
+                ) {
+                    sortingOnClickListener(column.value.key, it)
+                }
             }
         }
     }

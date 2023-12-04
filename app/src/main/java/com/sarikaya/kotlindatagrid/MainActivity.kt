@@ -89,12 +89,14 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column {
+
                         val dataGrid = DataGrid<Products>()
                             .setDataClass(Products::class)
-                            .setCheckBoxColumn(false, multipleSelect = true)
+                            .setCheckBoxColumn(true, multipleSelect = true)
                             .setColumn(ProductsColumn)
                             .setTableSize(height = 250.dp)
                             .setDataSource(data)
+                            .setSorting(true)
 //                            .setPagination(8)
                             .setPagination(30, total.value) {
                                 apiCall(it)
