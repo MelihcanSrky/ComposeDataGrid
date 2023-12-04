@@ -92,7 +92,7 @@ class DataGrid<D : Any> {
 
     fun setCheckBoxColumn(check: Boolean, multipleSelect: Boolean = false): DataGrid<D> {
         this.checkBoxColumn = check
-        this.multipleSelect = multipleSelect
+        this.multipleSelect = if (check) multipleSelect else false
         return this
     }
 
@@ -310,7 +310,7 @@ class DataGrid<D : Any> {
                 .height(48.dp)
                 .background(theme.dataGridColors.paginationTheme.paginationUnitBackground)
                 .setBorder(theme.dataGridColors.paginationTheme.paginationBorderColor)
-                .fillMaxWidth(),
+                .setTableWidth(width),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
