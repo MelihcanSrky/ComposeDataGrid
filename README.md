@@ -26,7 +26,7 @@ dependencyResolutionManagement {
 2. Add the dependency in your build.gradle.kts
 ```kotlin
 dependencies {
-	implementation("com.github.MelihcanSrky:ComposeDataGrid:0.1.1")
+	implementation("com.github.MelihcanSrky:ComposeDataGrid:0.1.6")
 }
 ```
 
