@@ -88,8 +88,8 @@ The second one is used in remote data with pagination to perform operations such
 .setPagination(): function takes a "limit" parameter of type Int. If there is a total number of data in the incoming request, it can take a "total" parameter of type Int. 
 It takes an "onAsyncPageChangeListener" function of type Lambda function. In this example it is used as follows:
 ```kotlin
-.setPagination(30, total.value) {
-    apiCall(it)
+.setPagination(30, total.value) { page ->
+    apiCall(page)
 }
 ```
 
