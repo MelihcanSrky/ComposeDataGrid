@@ -6,6 +6,9 @@ Gradle: 8.0
 
 Platforms: Android
 
+![image](https://github.com/MelihcanSrky/ComposeDataGrid/assets/62643822/cd48e28e-9092-469d-acba-ac69c15073a8)
+
+
 ## Download & Quick Start
 1. Add it in your settings.gradle.kts file:
 ```kotlin
