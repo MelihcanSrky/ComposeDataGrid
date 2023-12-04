@@ -59,7 +59,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.MelihcanSrky"
             artifactId = "ComposeDataGrid"
-            version = "0.1.4"
+            version = "0.1.5"
 
             afterEvaluate {
                 from(components["release"])

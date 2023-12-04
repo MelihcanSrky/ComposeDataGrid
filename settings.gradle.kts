@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "KotlinDataGrid"
 include(":app")
-//include(":ComposeDataGrid")
+include(":ComposeDataGrid")

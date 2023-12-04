@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
                     Column {
                         val dataGrid = DataGrid<Products>()
                             .setDataClass(Products::class)
-                            .setCheckBoxColumn(true, multipleSelect = true)
+                            .setCheckBoxColumn(false, multipleSelect = true)
                             .setColumn(ProductsColumn)
                             .setTableSize(height = 250.dp)
                             .setDataSource(data)
@@ -100,12 +100,6 @@ class MainActivity : ComponentActivity() {
                                 apiCall(it)
                             }
                             .setOnClickListeners {
-//                                setOnRowClickListener { index, data ->
-//                                    selectedRow = index
-//                                    if (data != null) {
-//                                        selectedRowData = data
-//                                    }
-//                                }
                                 setOnRowListClickListener { index, list ->
                                     println("$index List: ${list?.size}")
                                     selectedRowsList = list!!
@@ -115,6 +109,12 @@ class MainActivity : ComponentActivity() {
 //                                    selectedCell = cell
 //                                    selectedCellData = data
 //                                }
+                                setOnRowClickListener { index, data ->
+                                    selectedRow = index
+                                    if (data != null) {
+                                        selectedRowData = data
+                                    }
+                                }
                             }
 
                         dataGrid.build()
@@ -130,12 +130,12 @@ class MainActivity : ComponentActivity() {
 
 val ProductsColumn = listOf(
     DataGridColumn("id", name = "ID"),
-    DataGridColumn("title", name = "İsim"),
-    DataGridColumn("price", name = "Fiyat"),
-    DataGridColumn("discountPercentage", name = "İndirim Yüzdesi"),
-    DataGridColumn("rating", name = "Oylama"),
-    DataGridColumn("brand", name = "Marka"),
-    DataGridColumn("thumbnail", name = "Poster"),
+    DataGridColumn("title", name = "Name"),
+    DataGridColumn("price", name = "Price"),
+    DataGridColumn("discountPercentage", name = "Discount Percentage"),
+    DataGridColumn("rating", name = "Rating"),
+    DataGridColumn("brand", name = "Brand"),
+    DataGridColumn("thumbnail", name = "Thumbnail", defaultVisibility = false),
 )
 
 val MockDataColumn = listOf(
