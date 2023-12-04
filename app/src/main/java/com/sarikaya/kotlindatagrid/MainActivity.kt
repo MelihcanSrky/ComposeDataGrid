@@ -21,7 +21,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,45 +156,3 @@ data class MockDataClass(
     val number: String = ""
 )
 
-val MockData = listOf(
-    MockDataClass(
-        name = "Melih Can",
-        surname = "Sarıkaya",
-        city = "İzmir",
-        company = "Netcad",
-        number = "555 812 30 58",
-        address = "Altındağ Yıldıztepe mah."
-    ),
-    MockDataClass(
-        name = "Cafer",
-        surname = "Sarıkaya",
-        city = "Ankara",
-        company = "Coldwell",
-        number = "555 812 30 58",
-        address = "Yıldıztepe mah."
-    ),
-    MockDataClass(
-        name = "Durdane",
-        surname = "Sarıkaya",
-        city = "Ankara",
-        company = "Ev",
-        number = "555 812 30 58",
-        address = "Altındağ Yıldıztepe"
-    ),
-    MockDataClass(
-        name = "Funda",
-        surname = "Sarıkaya",
-        city = "Ankara",
-        company = "Softtech",
-        number = "",
-        address = "Altındağ "
-    ),
-    MockDataClass(
-        name = "Melih Can",
-        surname = "Sarıkaya",
-        city = "İzmir",
-        company = "Netcad",
-        number = "555 812 30 58",
-        address = "Altındağ Yıldıztepe mah."
-    ),
-)
