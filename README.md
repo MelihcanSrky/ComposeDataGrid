@@ -2,8 +2,6 @@
 
 [![](https://jitpack.io/v/MelihcanSrky/ComposeDataGrid.svg)](https://jitpack.io/#MelihcanSrky/ComposeDataGrid)
 
-Gradle: 8.0
-
 Platforms: Android
 
 On Progress: Sorting, Theming
