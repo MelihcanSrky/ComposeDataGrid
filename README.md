@@ -21,7 +21,7 @@ dependencyResolutionManagement {
 2. Add the dependency in your build.gradle.kts
 ```kotlin
 dependencies {
-	implementation 'com.github.MelihcanSrky:KotlinCustomComponents:0.1.12'
+	implementation("com.github.MelihcanSrky:KotlinCustomComponents:0.1.12")
 }
 ```
 
