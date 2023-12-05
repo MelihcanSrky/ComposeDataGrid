@@ -66,11 +66,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-//    implementation(project(":ComposeDataGrid"))
+    implementation(project(":ComposeDataGrid"))
 
     //Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-
-    implementation("com.github.MelihcanSrky:ComposeDataGrid:0.1.5")
 }
