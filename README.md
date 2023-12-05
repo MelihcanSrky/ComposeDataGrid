@@ -6,7 +6,8 @@ Platforms: Android
 
 On Progress: Theming
 
-![image](https://github.com/MelihcanSrky/ComposeDataGrid/assets/62643822/cd48e28e-9092-469d-acba-ac69c15073a8)
+![image](https://github.com/MelihcanSrky/ComposeDataGrid/assets/62643822/a2518783-210f-4b26-95d2-767c6c61d31e)
+
 
 
 ## Download & Quick Start
