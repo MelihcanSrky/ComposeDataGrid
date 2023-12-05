@@ -4,7 +4,7 @@
 
 Platforms: Android
 
-On Progress: Sorting, Theming
+On Progress: Theming
 
 ![image](https://github.com/MelihcanSrky/ComposeDataGrid/assets/62643822/cd48e28e-9092-469d-acba-ac69c15073a8)
 
@@ -24,7 +24,7 @@ dependencyResolutionManagement {
 2. Add the dependency in your build.gradle.kts
 ```kotlin
 dependencies {
-	implementation("com.github.MelihcanSrky:ComposeDataGrid:0.1.6")
+	implementation("com.github.MelihcanSrky:ComposeDataGrid:0.2.1")
 }
 ```
 
@@ -78,6 +78,9 @@ In this example, asynchronous data is used. Therefore the variable "data" comes 
 When this is activated, the user is given the ability to select more than one row from the table (multipleSelect is only available when the check box column is activated).
 
 .setTableSize(): Function can take width and height values, but not necessarily. When the function is not used, it takes max width and content height values.
+
+setSorting(): When value is turned on, icon button is added to the header columns. In this way, the data is filtered as ascending and descending according to the data type.
+Note: If the data comes with pagination, it sorts the current page. If it does not come with pagination or if it is static data, pagination is performed after sorting the data, if any.
 
 ### Pagination
 There are two variants. The first one can be used for static or asynchronous data without pagination. 
