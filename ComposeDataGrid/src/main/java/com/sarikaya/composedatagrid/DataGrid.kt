@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sarikaya.composedatagrid.components.ColumnGridRow
@@ -40,20 +38,23 @@ import com.sarikaya.composedatagrid.gridindexselector.OnClickListenerEvent
 import com.sarikaya.composedatagrid.gridindexselector.OnClickListenerImpl
 import com.sarikaya.composedatagrid.model.DataGridColumn
 import com.sarikaya.composedatagrid.model.DataGridThemeModel
+import com.sarikaya.composedatagrid.model.DataSourceState
 import com.sarikaya.composedatagrid.theme.CellModifier
-import com.sarikaya.composedatagrid.theme.CellPadding
 import com.sarikaya.composedatagrid.theme.DataGridTheme
 import com.sarikaya.composedatagrid.theme.Themes
 import com.sarikaya.composedatagrid.utils.SortBy
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
 
+
+
 class DataGrid<D : Any> {
     // DataGrid Columns.
     private var columns: MutableMap<Int, DataGridColumn> = mutableMapOf()
 
     // DataGrid data sources from user. (maybe async)
-    private var dataSource: MutableMap<Int, D> = mutableMapOf()
+    private var dataSourceState: MutableState<MutableList<DataSourceState<D>>> =
+        mutableStateOf(mutableListOf())
 
     // DataGrid CheckBox columns for start of grid to multiple choices.
     private var checkBoxColumn: Boolean = false
@@ -83,6 +84,7 @@ class DataGrid<D : Any> {
 
     // DataGrid Sorting
     private var isSortingEnabled: Boolean = false
+    private var sortingFields: MutableMap<String, SortBy> = mutableMapOf()
 
     fun setTableSize(width: Dp? = null, height: Dp? = null): DataGrid<D> {
         this.width = width
@@ -103,6 +105,9 @@ class DataGrid<D : Any> {
 
     fun setSorting(isSortingEnabled: Boolean = false): DataGrid<D> {
         this.isSortingEnabled = isSortingEnabled
+        dataClass.declaredMemberProperties.forEach {
+            sortingFields.put(it.name, SortBy.NO_SORT)
+        }
         return this
     }
 
@@ -152,9 +157,13 @@ class DataGrid<D : Any> {
      * @param[dataSource] gets a list of [Any].
      */
     fun setDataSource(dataSource: List<D>): DataGrid<D> {
-        this.dataSource.clear()
-        dataSource.forEachIndexed { index, any ->
-            this.dataSource.put(index, any)
+//        this.dataSource.clear()
+//        dataSource.forEachIndexed { index, any ->
+//            this.dataSource.put(index, any)
+//        }
+        this.dataSourceState.value = mutableListOf()
+        dataSource.forEachIndexed { index, data ->
+            this.dataSourceState.value.add(DataSourceState(index, data))
         }
         return this
     }
@@ -224,14 +233,10 @@ class DataGrid<D : Any> {
             mutableStateOf(false)
         }
         val sortBy = remember {
-            mutableStateOf(SortBy.DESCENDING)
+            mutableStateOf(sortingFields)
         }
-        val sortByField = remember {
-            mutableStateOf(columns.get(0)!!.key)
-        }
-
         Column {
-            if (dataSource.isNotEmpty() && !isLoading.value) {
+            if (dataSourceState.value.isNotEmpty() && !isLoading.value) {
                 LazyRow(
                     Modifier
                         .background(theme.dataGridColors.backgroundColor)
@@ -248,10 +253,16 @@ class DataGrid<D : Any> {
                                 checkBoxEnabled = checkBoxColumn,
                                 isSortingEnabled = isSortingEnabled,
                                 sortingOnClickListener = { key, _sortBy ->
-                                    sortByField.value = key
-                                    sortBy.value = _sortBy
+                                    println(key + " " + _sortBy)
+//                                    sortBy.value.putAll(sortingFields)
+                                    sortBy.value[key] = _sortBy
+                                    val _temp = dataSourceState.value
+                                    dataSourceState.value = mutableListOf()
+                                    dataSourceState.value.addAll(_temp.sortingBy(sortBy))
+                                    println(sortBy.value)
                                 },
-                                checkBoxState = selectedRowIndexes.value.isNotEmpty()
+                                checkBoxState = selectedRowIndexes.value.isNotEmpty(),
+                                sortBy = sortBy
                             ) {
                                 selectedRowIndexes.value = mutableListOf()
                                 if (!onClickListener.isRowListNull()) {
@@ -262,18 +273,18 @@ class DataGrid<D : Any> {
                             }
                             LazyColumn {
                                 itemsIndexed(
-                                    dataSource.entries.toList().setPagination(
+                                    dataSourceState.value.sortingBy(sortBy).setPagination(
                                         isPaginationEnabled,
                                         isPaginationAsync,
                                         pagingLimit,
                                         page,
-                                    ).sortingBy(sortBy.value, sortByField.value)
+                                    )
                                 ) { index, data ->
                                     DataGridRow(
                                         rowIndex = rowIndex,
                                         cellIndex = cellIndex,
                                         index = index,
-                                        data = data,
+                                        data = data.data,
                                         props = props,
                                         columnWidths = columnWidths,
                                         onClickSelector = onClickListener,
@@ -301,12 +312,12 @@ class DataGrid<D : Any> {
                                         if (!onClickListener.isRowListNull()) {
                                             onClickListener.onRowClicked(
                                                 index,
-                                                list = dataSource.filterForIndexList(
+                                                list = dataSourceState.value.filterForIndexList(
                                                     selectedRowIndexes.value
                                                 )
                                             )
                                         } else {
-                                            onClickListener.onRowClicked(index, data.value)
+                                            onClickListener.onRowClicked(index, data.data)
                                         }
                                     }
                                 }
@@ -350,7 +361,7 @@ class DataGrid<D : Any> {
                     page.value--
                     if (isPaginationAsync) {
                         isLoading.value = true
-                        dataSource.clear()
+                        dataSourceState.value.clear()
                         onAsyncPageChangeListener?.let { it(page.value) }
                         isLoading.value = false
                     }
@@ -366,7 +377,7 @@ class DataGrid<D : Any> {
                     pagingTotal?.getPageCount(
                         pagingLimit!!
                     ) ?: ""
-                }" else "${page.value + 1} / ${dataSource.getPageCount(pagingLimit!!)}",
+                }" else "${page.value + 1} / ${dataSourceState.value.getPageCount(pagingLimit!!)}",
                 color = theme.dataGridColors.paginationTheme.paginationLabelColor,
                 style = theme.dataCellTextStyle.textStyle
             )
@@ -379,21 +390,21 @@ class DataGrid<D : Any> {
                         ) {
                             isLoading.value = true
                             page.value++
-                            dataSource.clear()
+                            dataSourceState.value = mutableListOf()
                             onAsyncPageChangeListener?.let { it(page.value) }
                             isLoading.value = false
                         }
                     } else {
-                        if (dataSource.size == pagingLimit!!) {
+                        if (dataSourceState.value.size == pagingLimit!!) {
                             isLoading.value = true
                             page.value++
-                            dataSource.clear()
+                            dataSourceState.value = mutableListOf()
                             onAsyncPageChangeListener?.let { it(page.value) }
                             isLoading.value = false
                         }
                     }
                 } else {
-                    if (page.value + 1 < (dataSource.getPageCount(pagingLimit!!))) {
+                    if (page.value + 1 < (dataSourceState.value.getPageCount(pagingLimit!!))) {
                         page.value++
                     }
                 }

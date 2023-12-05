@@ -21,7 +21,7 @@ internal fun <D : Any> DataGridRow(
     rowIndex: MutableState<Int>,
     cellIndex: MutableState<Int>,
     index: Int,
-    data: MutableMap.MutableEntry<Int, D>,
+    data: D,
     props: Collection<KProperty1<D, *>>,
     columnWidths: SnapshotStateMap<Int, Dp>,
     onClickSelector: OnClickListenerImpl<D>,
@@ -56,7 +56,7 @@ internal fun <D : Any> DataGridRow(
                 var value = ""
                 for (prop in props) {
                     if (prop.name == column.value.key) {
-                        value = prop.getter.call(data.value).toString()
+                        value = prop.getter.call(data).toString()
                     }
                 }
                 DataCell(

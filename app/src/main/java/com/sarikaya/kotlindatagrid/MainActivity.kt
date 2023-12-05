@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sarikaya.composedatagrid.DataGrid
 import com.sarikaya.composedatagrid.model.DataGridColumn
+import com.sarikaya.composedatagrid.utils.ColumnType
 import com.sarikaya.kotlindatagrid.ui.theme.KotlinDataGridTheme
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,6 +33,19 @@ class MainActivity : ComponentActivity() {
 
         val apiService = retrofit.create(ApiService::class.java)
 
+        val mockData = mutableListOf<MockDataClass>()
+        for (i in 0..50) {
+            mockData.add(
+                MockDataClass(
+                    "Melih Can",
+                    "Sarıkaya",
+                    i,
+                    "ankara",
+                    i * ((i - 1) * 100),
+                )
+            )
+        }
+
         setContent {
             var selectedRow by remember {
                 mutableStateOf(-1)
@@ -42,7 +56,7 @@ class MainActivity : ComponentActivity() {
             }
 
             var selectedRowData by remember {
-                mutableStateOf(Products())
+                mutableStateOf(MockDataClass())
             }
 
             var selectedCellData by remember {
@@ -50,7 +64,7 @@ class MainActivity : ComponentActivity() {
             }
 
             var data by remember {
-                mutableStateOf<List<Products>>(mutableListOf())
+                mutableStateOf<List<MockDataClass>>(mutableListOf())
             }
 
             val page = remember {
@@ -69,8 +83,7 @@ class MainActivity : ComponentActivity() {
                         response: retrofit2.Response<Response>
                     ) {
                         total.value = response.body()?.total!!
-                        data = response.body()?.products ?: mutableListOf()
-                        println(response.body()?.skip)
+//                        data = response.body()?.products ?: mutableListOf()
                     }
 
                     override fun onFailure(call: Call<Response>, t: Throwable) {
@@ -81,7 +94,7 @@ class MainActivity : ComponentActivity() {
             }
             apiCall()
             var selectedRowsList by remember {
-                mutableStateOf<List<Products>>(emptyList())
+                mutableStateOf<List<MockDataClass>>(emptyList())
             }
             KotlinDataGridTheme {
                 Surface(
@@ -90,20 +103,19 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Column {
 
-                        val dataGrid = DataGrid<Products>()
-                            .setDataClass(Products::class)
+                        val dataGrid = DataGrid<MockDataClass>()
+                            .setDataClass(MockDataClass::class)
                             .setCheckBoxColumn(true, multipleSelect = true)
-                            .setColumn(ProductsColumn)
+                            .setColumn(MockDataColumn)
                             .setTableSize(height = 250.dp)
-                            .setDataSource(data)
+                            .setDataSource(mockData)
                             .setSorting(true)
-//                            .setPagination(8)
-                            .setPagination(30, total.value) {
-                                apiCall(it)
-                            }
+                            .setPagination(8)
+//                            .setPagination(30, total.value) {
+//                                apiCall(it)
+//                            }
                             .setOnClickListeners {
                                 setOnRowListClickListener { index, list ->
-                                    println("$index List: ${list?.size}")
                                     selectedRowsList = list!!
                                 }
 //                                setOnCellClickListener { row, cell, data ->
@@ -143,18 +155,18 @@ val ProductsColumn = listOf(
 val MockDataColumn = listOf(
     DataGridColumn("name", name = "Ad"),
     DataGridColumn("surname", name = "Soyad"),
-    DataGridColumn("company", name = "Şirket"),
+    DataGridColumn("company", name = "Şirket", type = ColumnType.NUMBER),
     DataGridColumn("city", name = "Şehir"),
-    DataGridColumn("address", name = "Adres"),
+    DataGridColumn("address", name = "Adres", type = ColumnType.NUMBER),
     DataGridColumn("number", name = "Numara"),
 )
 
 data class MockDataClass(
     val name: String = "",
     val surname: String = "",
-    val company: String = " ",
+    val company: Int = 0,
     val city: String = "",
-    val address: String = " ",
+    val address: Int = 0,
     val number: String = ""
 )
 
